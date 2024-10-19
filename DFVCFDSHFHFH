@@ -14089,7 +14089,7 @@ local data = {
     ["embeds"] = {
         {
             ["author"] = {
-                ["name"] = "( Alguém Executou o Script )",
+                ["name"] = "( Script Executado )",
                 ["url"] = "https://roblox.com",
             },
             ["description"] = "__[Informações do Jogador](https://www.roblox.com/users/"..Userid..")__\n"
