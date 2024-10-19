@@ -14021,7 +14021,8 @@ local function detectExecutor()
     return identifyexecutor()
 end
 
-print(detectExecutor())
+-- print(detectExecutor())
+print("Executor: " .. detectExecutor())
 
 local function createWebhookData()
     local webhookcheck = detectExecutor()
